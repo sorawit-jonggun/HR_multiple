@@ -2,13 +2,27 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import {
-  LayoutDashboard, Users, Building, Clock, CalendarDays,
-  FileText, BarChart3, Shield, ChevronLeft, ChevronRight, Briefcase, LogOut, Settings, ClipboardList, CalendarCheck2,
+  LayoutDashboard,
+  Users,
+  Building,
+  Clock,
+  CalendarDays,
+  FileText,
+  BarChart3,
+  Shield,
+  ChevronLeft,
+  ChevronRight,
+  Briefcase,
+  LogOut,
+  Settings,
+  ClipboardList,
+  CalendarCheck2,
 } from "lucide-react";
 import CompanySwitcher from "@/components/CompanySwitcher";
 import { useAuth } from "@/contexts/AuthContext";
 import { Permission, UserRole } from "@/types/roles";
 import { cn } from "@/lib/utils";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
@@ -95,7 +109,7 @@ const navItems: NavItem[] = [
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const [collapsed, setCollapsed] = useState(false);
-  const { user, logout: authLogout, hasAnyPermission, hasRole } = useAuth();
+  const { user, userPermissions, logout: authLogout, hasAnyPermission, hasRole, setMockRole } = useAuth();
   const router = useRouter();
   const location = router.pathname;
   const canSwitchCompany = hasAnyPermission([
@@ -204,6 +218,26 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
                 Company Scoped Access
               </div>
             )}
+
+            {/* Role Switcher สำหรับโหมด Mock */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground hidden sm:inline">Role</span>
+              <Select
+                value={(userPermissions?.roles?.[0] as UserRole | undefined) || UserRole.SUPER_ADMIN}
+                onValueChange={(value) => setMockRole(value as UserRole)}
+              >
+                <SelectTrigger className="h-8 w-[150px] text-xs">
+                  <SelectValue placeholder="เลือก Role" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.values(UserRole).map((role) => (
+                    <SelectItem key={role} value={role} className="text-xs">
+                      {role}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div className="flex items-center gap-2 pl-4 border-l border-border">
               <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-medium">
                 {user?.username?.[0]?.toUpperCase() || "U"}
