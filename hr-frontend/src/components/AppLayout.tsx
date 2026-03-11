@@ -17,81 +17,183 @@ import {
   Settings,
   ClipboardList,
   CalendarCheck2,
+  ChevronDown,
+  ClockPlus,
+  Coins,
+  Banknote,
+  DollarSign,
+  Factory,
+  Umbrella,
+  Plane,
+  Ship, 
 } from "lucide-react";
 import CompanySwitcher from "@/components/CompanySwitcher";
 import { useAuth } from "@/contexts/AuthContext";
 import { Permission, UserRole } from "@/types/roles";
 import { cn } from "@/lib/utils";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-interface NavItem {
-  icon: React.ComponentType<{ className?: string }>;
+// Interface สำหรับ Sub Menu
+interface SubNavItem {
   label: string;
   path: string;
   permissions?: Permission[];
   roles?: UserRole[];
 }
 
+// อัปเดต NavItem ให้รองรับ subItems
+interface NavItem {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  path: string;
+  permissions?: Permission[];
+  roles?: UserRole[];
+  subItems?: SubNavItem[];
+}
+
 const navItems: NavItem[] = [
-  { 
-    icon: LayoutDashboard, 
-    label: "Dashboard", 
+  {
+    icon: LayoutDashboard,
+    label: "Dashboard",
     path: "/dashboard",
-    permissions: [Permission.VIEW_OWN_DASHBOARD, Permission.VIEW_COMPANY_DASHBOARD, Permission.VIEW_HOLDING_DASHBOARD]
-  },
-  { 
-    icon: Building, 
-    label: "Organization", 
-    path: "/organization",
-    permissions: [Permission.VIEW_COMPANY_ORGANIZATION, Permission.VIEW_ALL_ORGANIZATION, Permission.MANAGE_ORGANIZATION]
-  },
-  { 
-    icon: Briefcase, 
-    label: "Position Master", 
-    path: "/positions",
-    roles: [UserRole.HR_COMPANY, UserRole.CENTRAL_HR, UserRole.SUPER_ADMIN]
-  },
-  { 
-    icon: Users, 
-    label: "Employee", 
-    path: "/employees",
-    permissions: [Permission.VIEW_OWN_PROFILE, Permission.VIEW_DEPARTMENT_EMPLOYEES, Permission.VIEW_COMPANY_EMPLOYEES, Permission.VIEW_ALL_EMPLOYEES]
-  },
-  { 
-    icon: Clock, 
-    label: "Time & Attendance", 
-    path: "/attendance",
-    permissions: [Permission.VIEW_OWN_ATTENDANCE, Permission.VIEW_DEPARTMENT_ATTENDANCE, Permission.VIEW_COMPANY_ATTENDANCE, Permission.MANAGE_ATTENDANCE]
-  },
-  { 
-    icon: CalendarDays, 
-    label: "Leave", 
-    path: "/leave",
-    permissions: [Permission.REQUEST_LEAVE, Permission.APPROVE_DEPARTMENT_LEAVE, Permission.MANAGE_COMPANY_LEAVE, Permission.MANAGE_ALL_LEAVE]
-  },
-  { 
-    icon: FileText, 
-    label: "Contract", 
-    path: "/contracts",
-    permissions: [Permission.VIEW_COMPANY_CONTRACTS, Permission.MANAGE_COMPANY_CONTRACTS, Permission.MANAGE_CONTRACT_TEMPLATES]
+    permissions: [
+      Permission.VIEW_OWN_DASHBOARD,
+      Permission.VIEW_COMPANY_DASHBOARD,
+      Permission.VIEW_HOLDING_DASHBOARD,
+    ],
   },
   {
-    icon: CalendarCheck2,
-    label: "Holiday",
+    icon: Building,
+    label: "Organization",
+    path: "/organization",
+    permissions: [
+      Permission.VIEW_COMPANY_ORGANIZATION,
+      Permission.VIEW_ALL_ORGANIZATION,
+      Permission.MANAGE_ORGANIZATION,
+    ],
+    // เพิ่มเมนูย่อยให้กับ Organization
+    subItems: [
+      { label: "Companies", path: "/organization/companies" },
+      { label: "Divisions", path: "/organization/devision" },
+      { label: "Sections", path: "/organization/section" },
+      { label: "Departments", path: "/organization/department" },
+      { label: "Positions", path: "/organization/position" },
+      { label: "Levels", path: "/organization/level" },
+    ],
+  },
+  // {
+  //   icon: Briefcase,
+  //   label: "Position Master",
+  //   path: "/positions",
+  //   roles: [UserRole.HR_COMPANY, UserRole.CENTRAL_HR, UserRole.SUPER_ADMIN],
+  // },
+  {
+    icon: Users,
+    label: "Employee",
+    path: "/employees",
+    // เพิ่ม Roles เพื่อให้พนักงานและสิทธิ์อื่นๆ มองเห็นเมนูนี้
+    roles: [
+      
+      UserRole.MANAGER,
+      UserRole.HR_COMPANY,
+      UserRole.CENTRAL_HR,
+      UserRole.SUPER_ADMIN,
+    ],
+    permissions: [
+      Permission.VIEW_DEPARTMENT_EMPLOYEES,
+      Permission.VIEW_COMPANY_EMPLOYEES,
+      Permission.VIEW_ALL_EMPLOYEES,
+    ],
+  },
+  {
+    icon: Clock,
+    label: "Time & Attendance",
+    path: "/attendance",
+    permissions: [
+      Permission.VIEW_OWN_ATTENDANCE,
+      Permission.VIEW_DEPARTMENT_ATTENDANCE,
+      Permission.VIEW_COMPANY_ATTENDANCE,
+      Permission.MANAGE_ATTENDANCE,
+    ],
+  },
+  {
+    icon: ClockPlus,
+    label: "OT Management",
+    path: "/overtime",
+    permissions: [
+      Permission.VIEW_DEPARTMENT_ATTENDANCE,
+      Permission.VIEW_COMPANY_ATTENDANCE,
+      Permission.MANAGE_ATTENDANCE,
+    ],
+  },
+  {
+    icon: CalendarDays,
+    label: "Leave Management",
+    path: "/leave",
+    permissions: [
+      Permission.REQUEST_LEAVE,
+      Permission.APPROVE_DEPARTMENT_LEAVE,
+      Permission.MANAGE_COMPANY_LEAVE,
+      Permission.MANAGE_ALL_LEAVE,
+    ],
+  },
+    {
+    icon: Ship,
+    label: "Holiday Management",
     path: "/holidays",
-    permissions: [Permission.VIEW_HOLIDAYS, Permission.MANAGE_COMPANY_HOLIDAYS, Permission.MANAGE_ALL_HOLIDAYS],
+    permissions: [
+      Permission.VIEW_HOLIDAYS,
+      Permission.MANAGE_COMPANY_HOLIDAYS,
+      Permission.MANAGE_ALL_HOLIDAYS,
+    ],
   },
-  { 
-    icon: BarChart3, 
-    label: "Reports", 
+  {
+    icon: FileText,
+    label: "Contract Management",
+    path: "/contracts",
+    permissions: [
+      Permission.VIEW_COMPANY_CONTRACTS,
+      Permission.MANAGE_COMPANY_CONTRACTS,
+      Permission.MANAGE_CONTRACT_TEMPLATES,
+    ],
+  },
+    {
+    icon: DollarSign,
+    label: "Payroll Management",
+    path: "/payroll",
+    permissions: [
+      Permission.VIEW_COMPANY_CONTRACTS,
+      Permission.MANAGE_COMPANY_CONTRACTS,
+      Permission.MANAGE_CONTRACT_TEMPLATES,
+    ],
+  },
+  {
+    icon: BarChart3,
+    label: "Reports",
     path: "/reports",
-    permissions: [Permission.VIEW_DEPARTMENT_REPORTS, Permission.VIEW_COMPANY_REPORTS, Permission.VIEW_CONSOLIDATED_REPORTS]
+    permissions: [
+      Permission.VIEW_DEPARTMENT_REPORTS,
+      Permission.VIEW_COMPANY_REPORTS,
+      Permission.VIEW_CONSOLIDATED_REPORTS,
+    ],
   },
-  { 
-    icon: Shield, 
-    label: "User & Permission", 
+  {
+    icon: Shield,
+    label: "User & Permission",
     path: "/permissions",
-    roles: [UserRole.SUPER_ADMIN]
+    roles: [UserRole.SUPER_ADMIN],
+  },
+    {
+    icon: Factory,
+    label: "Organizational Structure",
+    path: "/structure",
+    roles: [UserRole.SUPER_ADMIN],
   },
   {
     icon: Settings,
@@ -109,6 +211,7 @@ const navItems: NavItem[] = [
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const [collapsed, setCollapsed] = useState(false);
+  const [openDropdowns, setOpenDropdowns] = useState<string[]>([]); // State เก็บข้อมูลเมนูย่อยที่ถูกเปิด
   const { user, userPermissions, logout: authLogout, hasAnyPermission, hasRole, setMockRole } = useAuth();
   const router = useRouter();
   const location = router.pathname;
@@ -123,15 +226,28 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // Filter nav items based on user permissions
+  // ฟังก์ชันสำหรับเปิด/ปิดเมนูย่อย
+  const toggleDropdown = (path: string) => {
+    setOpenDropdowns((prev) =>
+      prev.includes(path) ? prev.filter((p) => p !== path) : [...prev, path]
+    );
+  };
+
+  // Filter nav items based on user permissions or roles
   const visibleNavItems = navItems.filter((item) => {
-    if (item.roles && item.roles.length > 0) {
-      return item.roles.some((role) => hasRole(role));
-    }
-    if (item.permissions && item.permissions.length > 0) {
-      return hasAnyPermission(item.permissions);
-    }
-    return true;
+    if (!item.roles && !item.permissions) return true;
+
+    const matchRole =
+      item.roles && item.roles.length > 0
+        ? item.roles.some((role) => hasRole(role))
+        : false;
+
+    const matchPermission =
+      item.permissions && item.permissions.length > 0
+        ? hasAnyPermission(item.permissions)
+        : false;
+
+    return matchRole || matchPermission;
   });
 
   return (
@@ -158,8 +274,87 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
         {/* Nav */}
         <nav className="flex-1 py-4 space-y-1 px-2 overflow-y-auto">
           {visibleNavItems.map((item) => {
-            const isActive = location === item.path || 
+            const hasSubItems = item.subItems && item.subItems.length > 0;
+            const isActive =
+              location === item.path ||
               (item.path !== "/" && location.startsWith(item.path));
+
+            // เมนูจะกางอัตโนมัติถ้าเปิดไว้ หรือ อยู่ในหน้าย่อยนั้นๆ พอดี
+            const isOpen = openDropdowns.includes(item.path) || isActive;
+
+            if (hasSubItems) {
+              const visibleSubItems = item.subItems!.filter((sub) => {
+                if (!sub.roles && !sub.permissions) return true;
+                const matchRole =
+                  sub.roles && sub.roles.length > 0
+                    ? sub.roles.some((role) => hasRole(role))
+                    : false;
+                const matchPerm =
+                  sub.permissions && sub.permissions.length > 0
+                    ? hasAnyPermission(sub.permissions)
+                    : false;
+                return matchRole || matchPerm;
+              });
+
+              if (visibleSubItems.length === 0) return null;
+
+              return (
+                <div key={item.path} className="flex flex-col space-y-1">
+                  <button
+                    onClick={() => toggleDropdown(item.path)}
+                    className={cn(
+                      "flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-colors-300 w-full",
+                      isActive
+                        ? "bg-white/15 text-white font-medium"
+                        : "text-white hover:bg-white/10"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <item.icon
+                        className={cn(
+                          "h-5 w-5 shrink-0",
+                          isActive && "text-sidebar-primary"
+                        )}
+                      />
+                      {!collapsed && (
+                        <span className="truncate">{item.label}</span>
+                      )}
+                    </div>
+                    {!collapsed && (
+                      <ChevronDown
+                        className={cn(
+                          "h-4 w-4 transition-transform duration-200",
+                          isOpen ? "rotate-180" : ""
+                        )}
+                      />
+                    )}
+                  </button>
+
+                  {!collapsed && isOpen && (
+                    <div className="flex flex-col space-y-1 mt-1 pl-11 pr-2">
+                      {visibleSubItems.map((sub) => {
+                        const isSubActive = location === sub.path;
+                        return (
+                          <Link
+                            key={sub.path}
+                            href={sub.path}
+                            className={cn(
+                              "block px-3 py-2 rounded-lg text-sm transition-colors-300",
+                              isSubActive
+                                ? "text-sidebar-primary bg-white/10 font-medium"
+                                : "text-white/70 hover:text-white hover:bg-white/5"
+                            )}
+                          >
+                            {sub.label}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
             return (
               <Link
                 key={item.path}
@@ -171,7 +366,12 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
                     : "text-white hover:bg-white/10"
                 )}
               >
-                <item.icon className={cn("h-5 w-5 shrink-0", isActive && "text-sidebar-primary")} />
+                <item.icon
+                  className={cn(
+                    "h-5 w-5 shrink-0",
+                    isActive && "text-sidebar-primary"
+                  )}
+                />
                 {!collapsed && <span className="truncate">{item.label}</span>}
               </Link>
             );
@@ -182,7 +382,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
         <button
           onClick={handleLogout}
           className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors-300 text-white hover:bg-white/10 mx-2 mb-4 w-[calc(100%-1rem)]",
+            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors-300 text-white hover:bg-white/10 mx-2 mb-4 w-[calc(100%-1rem)]"
           )}
         >
           <LogOut className="h-5 w-5 shrink-0" />
@@ -194,7 +394,11 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
           onClick={() => setCollapsed(!collapsed)}
           className="absolute -right-3 top-20 h-6 w-6 rounded-full bg-card border border-border flex items-center justify-center shadow-card hover:shadow-card-hover transition-shadow"
         >
-          {collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
+          {collapsed ? (
+            <ChevronRight className="h-3 w-3" />
+          ) : (
+            <ChevronLeft className="h-3 w-3" />
+          )}
         </button>
       </aside>
 
@@ -204,9 +408,10 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
         <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6 shrink-0">
           <div>
             <h1 className="text-lg font-semibold text-foreground">
-              {visibleNavItems.find(i => 
-                location === i.path || 
-                (i.path !== "/" && location.startsWith(i.path))
+              {visibleNavItems.find(
+                (i) =>
+                  location === i.path ||
+                  (i.path !== "/" && location.startsWith(i.path))
               )?.label || "Dashboard"}
             </h1>
           </div>
@@ -221,9 +426,14 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 
             {/* Role Switcher สำหรับโหมด Mock */}
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground hidden sm:inline">Role</span>
+              <span className="text-xs text-muted-foreground hidden sm:inline">
+                Role
+              </span>
               <Select
-                value={(userPermissions?.roles?.[0] as UserRole | undefined) || UserRole.SUPER_ADMIN}
+                value={
+                  (userPermissions?.roles?.[0] as UserRole | undefined) ||
+                  UserRole.SUPER_ADMIN
+                }
                 onValueChange={(value) => setMockRole(value as UserRole)}
               >
                 <SelectTrigger className="h-8 w-[150px] text-xs">
@@ -243,17 +453,19 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
                 {user?.username?.[0]?.toUpperCase() || "U"}
               </div>
               <div className="text-sm">
-                <div className="font-medium text-foreground">{user?.display_name || user?.username || "User"}</div>
-                <div className="text-xs text-muted-foreground">{user?.position_name || user?.role || "Employee"}</div>
+                <div className="font-medium text-foreground">
+                  {user?.display_name || user?.username || "User"}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {user?.position_name || user?.role || "Employee"}
+                </div>
               </div>
             </div>
           </div>
         </header>
 
         {/* Content */}
-        <main className="flex-1 overflow-y-auto p-6">
-          {children}
-        </main>
+        <main className="flex-1 overflow-y-auto p-6">{children}</main>
       </div>
     </div>
   );
