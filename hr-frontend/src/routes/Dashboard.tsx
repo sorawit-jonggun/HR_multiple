@@ -3,6 +3,29 @@ import { useCompany } from "@/contexts/CompanyContexts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  RadialLinearScale, // <-- เพิ่มตัวนี้ (สำหรับสเกลวงกลม)
+  ArcElement,
+  Tooltip as ChartTooltip,
+  Legend as ChartLegend,
+} from "chart.js";
+import { Bar as ChartJsBar, PolarArea, Doughnut } from "react-chartjs-2";
+
+// ลงทะเบียน Component ของ Chart.js
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  RadialLinearScale, // <-- เพิ่มตัวนี้
+  ArcElement,
+  ChartTooltip,
+  ChartLegend,
+);
+
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -18,6 +41,7 @@ import {
   LogOut,
   AlertCircle,
   Calendar,
+  ClockPlus,
 } from "lucide-react";
 import {
   BarChart,
@@ -344,37 +368,37 @@ const Dashboard = () => {
   // 3. Mock Data สำหรับการ์ดตัวเลข 6 กล่องด้านบน
   const statCards = [
     {
-      label: "Total Headcount",
+      label: "จำนวนพนักงานทั้งหมด (คน)",
       value: 342,
       icon: Users,
       color: "text-blue-600 bg-blue-100",
     },
     {
-      label: "New Joiners",
-      value: 15,
+      label: "พนักงานที่มาทำงานวันนี้ (คน)",
+      value: 300,
       icon: UserCheck,
       color: "text-emerald-600 bg-emerald-100",
     },
     {
-      label: "Resigned",
-      value: 3,
+      label: "จำนวนพนักงานที่ลา (คน/วัน)",
+      value: 40,
       icon: LogOut,
       color: "text-rose-600 bg-rose-100",
     },
     {
-      label: "Total OT Hours",
+      label: "จำนวน OT ทั้งหมด (ชั่งโมง)",
       value: 1250,
-      icon: Clock,
+      icon: ClockPlus,
       color: "text-amber-600 bg-amber-100",
     },
     {
-      label: "Contracts Expiring",
+      label: "สัญญาหมดอายุ (คน)",
       value: 5,
       icon: FileWarning,
       color: "text-orange-600 bg-orange-100",
     },
     {
-      label: "Pending Approvals",
+      label: "รอการอนุมัติ (คน)",
       value: 24,
       icon: AlertCircle,
       color: "text-purple-600 bg-purple-100",
@@ -1087,83 +1111,246 @@ const Dashboard = () => {
           </Card>
         ))}
       </div>
-     
-        {/* Charts Row */}
-        <div className="grid grid-cols-2 lg:grid-cols-2 gap-6">
-          {/* Attendance Status Chart */}
-          <Card className="shadow-card">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold">
-                Attendance Status
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={260}>
-                <BarChart data={attendanceByStatus}>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="hsl(214 20% 90%)"
-                  />
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fontSize: 12 }}
-                    tickLine={false}
-                  />
-                  <YAxis tick={{ fontSize: 12 }} tickLine={false} />
-                  <Tooltip />
-                  <Bar
-                    dataKey="value"
-                    fill="hsl(215 70% 45%)"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
 
-          {/* Department Distribution Donut Chart */}
-          <Card className="shadow-card">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold">
-                Employee Distribution by Department
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={260}>
-                <PieChart>
-                  <Pie
-                    data={deptDistribution}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={4}
-                    dataKey="value"
-                  >
-                    {deptDistribution.map((_, i) => (
-                      <Cell
-                        key={i}
-                        fill={
-                          [
-                            "#3b82f6",
-                            "#ef4444",
-                            "#10b981",
-                            "#f59e0b",
-                            "#8b5cf6",
-                            "#ec4899",
-                          ][i % 6]
-                        }
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </div>
+      {/* Charts Row */}
       
+      <div className="grid grid-cols-2 lg:grid-cols-2 gap-6">
+        <div className="flex flex-col gap-6">
+        {/* Attendance Status Chart (ใช้ Chart.js) */}
+        <Card className="shadow-card flex-1 ">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-semibold">
+              Attendance Status
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {/* 🔴 จุดสำคัญ: เปลี่ยนจาก style เป็น className และเพิ่ม "relative" */}
+            <div className="relative w-full h-[260px]">
+              <ChartJsBar
+                data={{
+                  labels: attendanceByStatus.map((item) => item.name),
+                  datasets: [
+                    {
+                      label: "จำนวนพนักงาน",
+                      data: attendanceByStatus.map((item) => item.value),
+                      // ดึงสีเผื่อทั้งคีย์ fill (ใหม่) และ color (เก่า)
+                      backgroundColor: attendanceByStatus.map(
+                        (item) => item.fill || item.color || "#3b82f6",
+                      ),
+                      borderRadius: 4, // 🔴 ใช้เป็นตัวเลขธรรมดาแทน Object
+                    },
+                  ],
+                }}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false, // บังคับให้กราฟใช้ความสูงตามกล่อง relative ด้านบน
+                  plugins: {
+                    legend: {
+                      display: false,
+                    },
+                  },
+                  scales: {
+                    x: {
+                      grid: {
+                        display: false,
+                      },
+                      ticks: {
+                        font: { size: 12 },
+                      },
+                    },
+                    y: {
+                      beginAtZero: true,
+                      grid: {
+                        color: "rgba(0, 0, 0, 0.05)",
+                      },
+                      border: {
+                        dash: [3, 3], // 🔴 ย้ายตั้งค่าเส้นประมาตรงนี้แทน
+                      },
+                      ticks: {
+                        font: { size: 12 },
+                        stepSize: 50, // กะระยะห่างของตัวเลขแกน Y
+                      },
+                    },
+                  },
+                }}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Company Pay (Doughnut Chart) */}
+        <Card className="shadow-card flex-1 ">
+          <CardHeader className="pb-0 flex flex-row items-center justify-between">
+            <CardTitle className="text-base font-semibold">
+              Company Pay
+            </CardTitle>
+            {/* ตัวเลือกปี (จำลอง) */}
+            <select className="text-sm border-gray-200 rounded-md bg-slate-50 px-2 py-1 outline-none">
+              <option>2024</option>
+              <option>2025</option>
+              <option>2026</option>
+            </select>
+          </CardHeader>
+          <CardContent className="bg-gray-300 ">
+            {/* ชุดข้อมูล Mock Data สำหรับ Company Pay */}
+            {(() => {
+              const companyPayData = [
+                { label: "Salary", percent: 15, value: 1115, color: "#ef4444" },      // แดง
+                { label: "Bonus", percent: 8, value: 595, color: "#10b981" },        // เขียว
+                { label: "Commission", percent: 20, value: 1487, color: "#0ea5e9" }, // ฟ้า
+                { label: "Overtime", percent: 11, value: 817, color: "#f97316" },    // ส้ม
+                { label: "Reimbursement", percent: 28, value: 2081, color: "#3b82f6" }, // น้ำเงิน
+                { label: "Benefits", percent: 18, value: 1338, color: "#eab308" },   // เหลือง
+              ];
+              
+              const totalValue = companyPayData.reduce((acc, curr) => acc + curr.value, 0);
+
+              return (
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-8 pt-4 pb-2">
+                  
+                  {/* ฝั่งซ้าย: กราฟโดนัท */}
+                  <div className="relative w-48 h-48 sm:w-56 sm:h-56">
+                    <Doughnut
+                      data={{
+                        labels: companyPayData.map((item) => item.label),
+                        datasets: [
+                          {
+                            data: companyPayData.map((item) => item.value),
+                            backgroundColor: companyPayData.map((item) => item.color),
+                            borderWidth: 4, // ความหนาของช่องว่างระหว่างเส้น
+                            borderColor: "#ffffff", // สีช่องว่าง (สีเดียวกับพื้นหลัง)
+                            borderRadius: 20, // ทำให้ปลายเส้นโค้งมน (Pill shape)
+                            hoverOffset: 4,
+                          },
+                        ],
+                      }}
+                      options={{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: "80%", // ขนาดรูกลางโดนัท (ยิ่งเยอะเส้นยิ่งบาง)
+                        plugins: {
+                          legend: {
+                            display: false, // ปิด Legend เดิมของ Chart.js
+                          },
+                          tooltip: {
+                            callbacks: {
+                              label: function (context) {
+                                const val = context.raw || 0;
+                                return ` ${context.label}: ${val.toLocaleString()} THB`;
+                              },
+                            },
+                          },
+                        },
+                      }}
+                    />
+                    
+                    {/* ข้อความตรงกลางกราฟ (Absolute Positioning) */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                      <span className="text-2xl sm:text-3xl font-bold text-slate-700">
+                        {totalValue.toLocaleString()}
+                      </span>
+                      <span className="text-xs sm:text-sm text-muted-foreground font-medium mt-1">
+                        Total Data
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* ฝั่งขวา: Custom Legend (คำอธิบายแบบในรูป) */}
+                  <div className="flex flex-col gap-3 min-w-[160px]">
+                    {companyPayData.map((item, index) => (
+                      <div key={index} className="flex items-center gap-3">
+                        {/* จุดสี */}
+                        <div
+                          className="w-3 h-3 rounded-full shrink-0"
+                          style={{ backgroundColor: item.color }}
+                        ></div>
+                        {/* เปอร์เซ็นต์ */}
+                        <span className="text-sm font-bold text-slate-700">
+                          {String(item.percent).padStart(2, '0')}%
+                        </span>
+                        {/* ชื่อรายการ */}
+                        <span className="text-sm text-muted-foreground font-medium">
+                          {item.label}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                </div>
+                
+              );
+              
+            })()}
+          </CardContent>
+        </Card>
+</div>
+        {/* Department Distribution Polar Area Chart */}
+        <Card className="shadow-card ">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-semibold">
+              Employee Distribution by Department
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex justify-center items-center w-full h-full">
+            {/* ใช้ div ครอบพร้อมความสูง เพื่อให้ maintainAspectRatio: false ทำงานได้ */}
+            <div className="relative w-full  h-[500px] mx-auto pb-2">
+              <PolarArea
+                data={{
+                  labels: deptDistribution.map((item) => item.name),
+                  datasets: [
+                    {
+                      label: "จำนวนพนักงาน",
+                      data: deptDistribution.map((item) => item.value),
+                      // กำหนดสีพื้นหลังให้โปร่งแสงนิดๆ (0.7) เพื่อให้เห็นเส้นสเกลด้านหลัง
+                      backgroundColor: [
+                        "rgba(59, 130, 246, 0.7)", // ฟ้า #3b82f6
+                        "rgba(239, 68, 68, 0.7)", // แดง #ef4444
+                        "rgba(16, 185, 129, 0.7)", // เขียว #10b981
+                        "rgba(245, 158, 11, 0.7)", // ส้ม #f59e0b
+                        "rgba(139, 92, 246, 0.7)", // ม่วง #8b5cf6
+                        "rgba(236, 72, 153, 0.7)", // ชมพู #ec4899
+                      ],
+                      borderWidth: 1, // ความหนาเส้นขอบ
+                    },
+                  ],
+                }}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  scales: {
+                    r: {
+                      pointLabels: {
+                        display: true,
+                        centerPointLabels: true, // 🔴 ทำให้ Label อยู่ตรงกลางช่องพอดี
+                        font: {
+                          size: 11,
+                        },
+                      },
+                    },
+                  },
+                  plugins: {
+                    legend: {
+                      position: "right", // ย้ายคำอธิบายไปด้านขวา จะได้ไม่เบียดกราฟ
+                      labels: {
+                        boxWidth: 12,
+                        font: { size: 11 },
+                      },
+                    },
+                    tooltip: {
+                      callbacks: {
+                        label: function (context) {
+                          return ` ${context.label}: ${context.raw} คน`;
+                        },
+                      },
+                    },
+                  },
+                }}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
 
       {/* Alert Tables Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

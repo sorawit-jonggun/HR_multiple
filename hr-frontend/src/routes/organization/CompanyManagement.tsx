@@ -14,9 +14,44 @@ import {
 // 1. MOCK DATA & MOCK API (จำลองระบบ Backend)
 // ==========================================
 let MOCK_COMPANIES = [
-  { id: 1, name_th: "Thai Summit Automotive Co., Ltd.", short_name: "TSA" },
-  { id: 2, name_th: "TSA Rayong Branch", short_name: "TSA-RY" },
-  { id: 3, name_th: "PK Clinic & Beauty", short_name: "PKC" },
+  {
+    id: 1,
+    name_th: "Thai Summit Automotive Co., Ltd. (Headquarter)",
+    short_name: "TSA",
+  },
+  {
+    id: 2,
+    name_th: "Thai Summit Eastern Seaboard Autoparts Industry Co., Ltd.",
+    short_name: "TSA-RY",
+  },
+  { id: 3, name_th: "Thai Summit Autoparts Co., Ltd.", short_name: "PKC" },
+  {
+    id: 4,
+    name_th: "Thai Summit Auto Press Co., Ltd.",
+    short_name: "TSA",
+  },
+  {
+    id: 5,
+    name_th: "Thai Summit Laemchabang Autoparts Co., Ltd.",
+    short_name: "TSA-RY",
+  },
+  { id: 6, name_th: "Thai Summit Banpho Co., Ltd.", short_name: "PKC" },
+  {
+    id: 7,
+    name_th: "Thai Summit Plastech Co., Ltd. (Branch 2)",
+    short_name: "TSA",
+  },
+  {
+    id: 8,
+    name_th: "TThai Summit Eastern Seaboard Autoparts Industry Co., Ltd.",
+    short_name: "TSA-RY",
+  },
+  { id: 9, name_th: "TS Interseats Co., Ltd.", short_name: "PKC" },
+  {
+    id: 10,
+    name_th: "Thai Summit Gold Press Co., Ltd. (Headquarter)",
+    short_name: "TSA",
+  },
 ];
 
 const mockAPI = {
