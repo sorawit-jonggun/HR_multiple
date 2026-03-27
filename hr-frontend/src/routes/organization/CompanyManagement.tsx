@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import AppLayout from "@/components/AppLayout";
+import { allCompanies } from "@/data/mockData";
 import {
   Plus,
   Edit2,
@@ -10,67 +11,23 @@ import {
   AlertCircle,
 } from "lucide-react";
 
-// ==========================================
-// 1. MOCK DATA & MOCK API (จำลองระบบ Backend)
-// ==========================================
-let MOCK_COMPANIES = [
-  {
-    id: 1,
-    name_th: "Thai Summit Automotive Co., Ltd. (Headquarter)",
-    short_name: "TSA",
-  },
-  {
-    id: 2,
-    name_th: "Thai Summit Eastern Seaboard Autoparts Industry Co., Ltd.",
-    short_name: "TSA-RY",
-  },
-  { id: 3, name_th: "Thai Summit Autoparts Co., Ltd.", short_name: "PKC" },
-  {
-    id: 4,
-    name_th: "Thai Summit Auto Press Co., Ltd.",
-    short_name: "TSA",
-  },
-  {
-    id: 5,
-    name_th: "Thai Summit Laemchabang Autoparts Co., Ltd.",
-    short_name: "TSA-RY",
-  },
-  { id: 6, name_th: "Thai Summit Banpho Co., Ltd.", short_name: "PKC" },
-  {
-    id: 7,
-    name_th: "Thai Summit Plastech Co., Ltd. (Branch 2)",
-    short_name: "TSA",
-  },
-  {
-    id: 8,
-    name_th: "TThai Summit Eastern Seaboard Autoparts Industry Co., Ltd.",
-    short_name: "TSA-RY",
-  },
-  { id: 9, name_th: "TS Interseats Co., Ltd.", short_name: "PKC" },
-  {
-    id: 10,
-    name_th: "Thai Summit Gold Press Co., Ltd. (Headquarter)",
-    short_name: "TSA",
-  },
-];
-
 const mockAPI = {
   getCompanies: async () =>
     new Promise<any>((res) =>
-      setTimeout(() => res({ data: MOCK_COMPANIES }), 300),
+      setTimeout(() => res({ data: allCompanies }), 300),
     ),
   createCompany: async (data: any) =>
     new Promise((res) =>
       setTimeout(() => {
-        const newId = Math.max(...MOCK_COMPANIES.map((c) => c.id), 0) + 1;
-        MOCK_COMPANIES.push({ id: newId, ...data });
+        const newId = Math.max(...allCompanies.map((c) => c.id), 0) + 1;
+        allCompanies.push({ id: newId, ...data });
         res(true);
       }, 300),
     ),
   updateCompany: async (id: number, data: any) =>
     new Promise((res) =>
       setTimeout(() => {
-        MOCK_COMPANIES = MOCK_COMPANIES.map((c) =>
+        allCompanies = allCompanies.map((c) =>
           c.id === id ? { ...c, ...data } : c,
         );
         res(true);
@@ -79,7 +36,7 @@ const mockAPI = {
   deleteCompany: async (id: number) =>
     new Promise((res) =>
       setTimeout(() => {
-        MOCK_COMPANIES = MOCK_COMPANIES.filter((c) => c.id !== id);
+        allCompanies = allCompanies.filter((c) => c.id !== id);
         res(true);
       }, 300),
     ),
@@ -188,14 +145,11 @@ export default function CompanyManagement() {
     <AppLayout>
       <div className="space-y-6 animate-fade-in pb-10">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between gap-4">
+        <div className="flex justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold text-slate-900">
               Company Management
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              จัดการรายชื่อบริษัทและนิติบุคคลในเครือ
-            </p>
           </div>
           <button
             onClick={handleOpenModal}
@@ -206,16 +160,20 @@ export default function CompanyManagement() {
           </button>
         </div>
 
-        {/* Info Card */}
-        <div className="grid grid-cols-4">
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200 p-6 shadow-sm w-full md:w-1/3">
-            <h3 className="font-bold text-blue-900 mb-2 flex items-center gap-2">
-              <Building size={20} />
-              Total Companies
-            </h3>
-            <p className="text-4xl font-bold text-blue-900">
-              {companies.length}
+        <div className="flex grid grid-cols-3 gap-6  ">
+          <div className=" items-center pl-10">
+            <div className="border-b-3 h-1/2"></div>
+          </div>
+
+          <div className="w-full border rounded-xl grid grid-cols-3 gap-4 py-4 ">
+            <Building className="col-span-1 justify-self-end"/>
+            <p className="text-2xl font-semibold col-span-2">
+               Total companies : {companies.length}
             </p>
+          </div>
+
+          <div className=" items-center pr-10">
+            <div className="border-b-3 h-1/2"></div>
           </div>
         </div>
 
@@ -245,11 +203,12 @@ export default function CompanyManagement() {
                     </th>
                   </tr>
                 </thead>
+
                 <tbody className="divide-y divide-slate-100">
                   {companies.map((company) => (
                     <tr
                       key={company.id}
-                      className="hover:bg-slate-50 transition-colors"
+                      className="hover:bg-black/10 transition-colors"
                     >
                       <td className="py-3 px-6 font-mono text-slate-500">
                         {company.id}

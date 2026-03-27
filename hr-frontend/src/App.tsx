@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { CompanyProvider } from "@/contexts/CompanyContexts";
 import AppLayout from "@/components/AppLayout";
-
 import Dashboard from "@/routes/Dashboard";
 import EmployeeList from "@/routes/EmployeeList";
 import EmployeeProfile from "@/routes/EmployeeProfile";
@@ -36,7 +35,7 @@ const ProtectedRoute = ({ requireAdmin = false }) => {
 
   // 2. เช็คสิทธิ์สำหรับหน้าพิเศษ (เช่น หน้า Permissions)
   if (requireAdmin) {
-    // 💡 เช็คจาก role ที่ Backend ส่งมาให้ ("Central HR", "Super Admin", ฯลฯ)
+    // เช็คจาก role ที่ Backend ส่งมาให้ ("Central HR", "Super Admin", ฯลฯ)
     const isAuthorized = 
       user?.role === "Super Admin" || 
       user?.role === "Central HR" || 
@@ -64,10 +63,9 @@ const App = () => (
       <CompanyProvider>
         <BrowserRouter>
           <Routes>
-            {/* 🚪 เส้นทางสาธารณะ (หน้า Login จะไม่มีเมนู Sidebar โผล่มากวนใจ) */}
-            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Login />} />
 
-            {/* 🏢 เส้นทางทั่วไป (ต้อง Login ก่อนถึงจะเข้าได้) */}
+            {/* เส้นทางทั่วไป (ต้อง Login ก่อนถึงจะเข้าได้) */}
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
@@ -81,12 +79,12 @@ const App = () => (
               <Route path="/reports" element={<Reports />} />
             </Route>
 
-            {/* 👑 เส้นทางพิเศษ (ต้อง Login + ต้องเป็น HR/Admin เท่านั้น) */}
+            {/* เส้นทางพิเศษ (ต้อง Login + ต้องเป็น HR/Admin เท่านั้น) */}
             <Route element={<ProtectedRoute requireAdmin={true} />}>
               <Route path="/permissions" element={<UserPermissions />} />
             </Route>
 
-            {/* ❓ หน้า 404 สำหรับ URL ที่พิมพ์ผิด */}
+            {/* หน้า 404 สำหรับ URL ที่พิมพ์ผิด */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

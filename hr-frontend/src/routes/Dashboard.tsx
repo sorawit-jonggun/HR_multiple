@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { useCompany } from "@/contexts/CompanyContexts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {deptDistribution, attendanceByStatus, statCards, mockLeaveQuotas, mockOtRequests } from "@/data/dashboardData"
+
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   BarElement,
-  RadialLinearScale, // <-- เพิ่มตัวนี้ (สำหรับสเกลวงกลม)
+  RadialLinearScale, 
   ArcElement,
   Tooltip as ChartTooltip,
   Legend as ChartLegend,
@@ -19,7 +21,7 @@ ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
-  RadialLinearScale, // <-- เพิ่มตัวนี้
+  RadialLinearScale, 
   ArcElement,
   ChartTooltip,
   ChartLegend,
@@ -104,54 +106,7 @@ const Dashboard = () => {
     new Date().toISOString().slice(0, 7),
   );
   //
-  const mockLeaveQuotas = [
-    { type: "ลาป่วย", used: 2, total: 30 },
-    { type: "ลากิจ", used: 1, total: 6 },
-    { type: "ลาพักร้อน", used: 3, total: 10 },
-  ];
-  const mockOtRequests = [
-    {
-      id: 1,
-      date: "11 มี.ค. 2026",
-      time: "17:30 - 20:30",
-      hours: 3,
-      reason: "เคลียร์ระบบขึ้น Production",
-      status: "pending",
-    },
-    {
-      id: 2,
-      date: "05 มี.ค. 2026",
-      time: "18:00 - 20:00",
-      hours: 2,
-      reason: "ทำรายงานสรุปบัญชีประจำเดือน",
-      status: "approved",
-    },
-    {
-      id: 3,
-      date: "01 มี.ค. 2026",
-      time: "17:30 - 21:30",
-      hours: 4,
-      reason: "ซ่อมแซมเซิร์ฟเวอร์ฉุกเฉิน",
-      status: "approved",
-    },
-    {
-      id: 4,
-      date: "25 ก.พ. 2026",
-      time: "17:30 - 19:30",
-      hours: 2,
-      reason: "สะสางงาน Routine ทั่วไป",
-      status: "rejected", // เทสต์ UI สีแดง (ไม่อนุมัติ)
-    },
-    {
-      id: 5,
-      date: "14 ก.พ. 2026",
-      time: "09:00 - 17:00",
-      hours: 8,
-      reason: "ซัพพอร์ตงาน Event นอกสถานที่ (วันหยุด)",
-      status: "approved",
-    },
-  ];
-
+  
   // ตัวแปรสำหรับนำไปแสดงผล (ถ้าปิด Mock ก็ให้ไปดึงจาก API จริง)
   const displayOtRequests = USE_MOCK_EMPLOYEE_DATA ? mockOtRequests : [];
   // Calendar
@@ -318,135 +273,7 @@ const Dashboard = () => {
     if (isAll) return true;
     return emp?.companyId === selectedCompany.id;
   });
-
-  // Calculate metrics
-  // const totalHeadcount = deptFilteredEmployees.length;
-
-  // const currentDate = new Date(selectedMonth);
-  // const newJoiners = deptFilteredEmployees.filter((e: any) => {
-  //   if (!e.joinedDate) return false;
-  //   const joinedDate = new Date(e.joinedDate);
-  //   return (
-  //     joinedDate.getMonth() === currentDate.getMonth() &&
-  //     joinedDate.getFullYear() === currentDate.getFullYear()
-  //   );
-  // }).length;
-
-  // const resigned = deptFilteredEmployees.filter((e: any) => {
-  //   if (!e.resignedDate) return false;
-  //   const resignedDate = new Date(e.resignedDate);
-  //   return (
-  //     resignedDate.getMonth() === currentDate.getMonth() &&
-  //     resignedDate.getFullYear() === currentDate.getFullYear()
-  //   );
-  // }).length;
-
-  // const totalOtHours = 150; // Mock data - should fetch from API
-
-  // ==========================================
-  // MOCK DATA: สำหรับหน้า Admin Dashboard (สถิติองค์กร)
-  // ==========================================
-
-  // 1. Mock Data สำหรับข้อมูลแผนก (กราฟโดนัท)
-  const deptDistribution = [
-    { name: "Production & Operation", value: 150 },
-    { name: "IT & Development", value: 45 },
-    { name: "Sales & Marketing", value: 65 },
-    { name: "Human Resources", value: 20 },
-    { name: "Finance & Accounting", value: 25 },
-    { name: "Admin & Support", value: 37 },
-  ];
-
-  // 2. Mock Data สำหรับภาพรวมการเข้างาน (กราฟแท่ง)
-  const attendanceByStatus = [
-    { name: "มาปกติ (Present)", value: 280, fill: "#10b981" }, // สีเขียว
-    { name: "สาย (Late)", value: 35, fill: "#f59e0b" }, // สีเหลือง
-    { name: "ขาด/ลา (Absent)", value: 12, fill: "#ef4444" }, // สีแดง
-    { name: "WFH", value: 15, fill: "#3b82f6" }, // สีน้ำเงิน
-  ];
-
-  // 3. Mock Data สำหรับการ์ดตัวเลข 6 กล่องด้านบน
-  const statCards = [
-    {
-      label: "จำนวนพนักงานทั้งหมด (คน)",
-      value: 342,
-      icon: Users,
-      color: "text-blue-600 bg-blue-100",
-    },
-    {
-      label: "พนักงานที่มาทำงานวันนี้ (คน)",
-      value: 300,
-      icon: UserCheck,
-      color: "text-emerald-600 bg-emerald-100",
-    },
-    {
-      label: "จำนวนพนักงานที่ลา (คน/วัน)",
-      value: 40,
-      icon: LogOut,
-      color: "text-rose-600 bg-rose-100",
-    },
-    {
-      label: "จำนวน OT ทั้งหมด (ชั่งโมง)",
-      value: 1250,
-      icon: ClockPlus,
-      color: "text-amber-600 bg-amber-100",
-    },
-    {
-      label: "สัญญาหมดอายุ (คน)",
-      value: 5,
-      icon: FileWarning,
-      color: "text-orange-600 bg-orange-100",
-    },
-    {
-      label: "รอการอนุมัติ (คน)",
-      value: 24,
-      icon: AlertCircle,
-      color: "text-purple-600 bg-purple-100",
-    },
-  ];
-
-  // Department distribution for donut chart
-  // const deptDistribution = Array.from(
-  //   new Map(
-  //     deptFilteredEmployees.map((e: any) => {
-  //       const dept = e.department || e.department_name || "Unassigned";
-  //       return [
-  //         dept,
-  //         deptFilteredEmployees.filter(
-  //           (d: any) =>
-  //             (d.department || d.department_name || "Unassigned") === dept,
-  //         ).length,
-  //       ];
-  //     }),
-  //   ),
-  //   ([dept, count]: [string, number]) => ({
-  //     name: dept || "Unassigned",
-  //     value: count,
-  //   }),
-  // );
-
-  // Contracts expiring in 30/60 days
-  // const expiringContracts = filteredContracts
-  //   .filter((c: any) => {
-  //     if (!c.expiryDate) return false;
-  //     const expiryDate = new Date(c.expiryDate);
-  //     const daysUntilExpiry = Math.floor(
-  //       (expiryDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24),
-  //     );
-  //     return daysUntilExpiry > 0 && daysUntilExpiry <= 60;
-  //   })
-  //   .sort(
-  //     (a: any, b: any) =>
-  //       new Date(a.expiryDate).getTime() - new Date(b.expiryDate).getTime(),
-  //   );
-
-  // Attendance data by status
-  // const attendanceByStatus = [
-  //   { name: "Present", value: 150, color: "hsl(145 60% 42%)" },
-  //   { name: "Late", value: 25, color: "hsl(38 92% 50%)" },
-  //   { name: "Absent", value: 10, color: "hsl(0 72% 55%)" },
-  //   { name: "WFH", value: 65, color: "hsl(205 80% 55%)" },
-  // ];
+  
 
   // Upcoming holidays (next 30 days)
   const upcomingHolidays = (publicHolidays || [])
@@ -462,44 +289,6 @@ const Dashboard = () => {
         new Date(a.date).getTime() - new Date(b.date).getTime(),
     );
 
-  // const statCards = [
-  //   {
-  //     label: "Total Headcount",
-  //     value: totalHeadcount,
-  //     icon: Users,
-  //     color: "text-primary",
-  //   },
-  //   {
-  //     label: "New Joiners",
-  //     value: newJoiners,
-  //     icon: UserCheck,
-  //     color: "text-success",
-  //   },
-  //   {
-  //     label: "Resigned",
-  //     value: resigned,
-  //     icon: LogOut,
-  //     color: "text-destructive",
-  //   },
-  //   {
-  //     label: "Total OT Hours",
-  //     value: totalOtHours,
-  //     icon: Clock,
-  //     color: "text-warning",
-  //   },
-  //   {
-  //     label: "Contracts Expiring",
-  //     value: expiringContracts.length,
-  //     icon: FileWarning,
-  //     color: "text-orange-600",
-  //   },
-  //   {
-  //     label: "Pending Approvals",
-  //     value: (pendingApprovals || []).length,
-  //     icon: AlertCircle,
-  //     color: "text-info",
-  //   },
-  // ];
 
   // ==========================================
   // 1. ตั้งค่าสำหรับสลับใช้ Mock Data
@@ -1073,7 +862,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in ">
       {/* User Welcome Header */}
       <div className="mb-4">
         <h1 className="text-3xl font-bold text-grey-900">
@@ -1191,7 +980,7 @@ const Dashboard = () => {
               <option>2026</option>
             </select>
           </CardHeader>
-          <CardContent className="bg-gray-300 ">
+          <CardContent >
             {/* ชุดข้อมูล Mock Data สำหรับ Company Pay */}
             {(() => {
               const companyPayData = [
@@ -1206,10 +995,10 @@ const Dashboard = () => {
               const totalValue = companyPayData.reduce((acc, curr) => acc + curr.value, 0);
 
               return (
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-8 pt-4 pb-2">
+                <div className="flex flex-col sm:flex-row items-center grid grid-cols-2 justify-center gap-8 pt-4 pb-2">
                   
                   {/* ฝั่งซ้าย: กราฟโดนัท */}
-                  <div className="relative w-48 h-48 sm:w-56 sm:h-56">
+                  <div className="relative w-48 h-48 sm:w-56 justify-self-center sm:h-56">
                     <Doughnut
                       data={{
                         labels: companyPayData.map((item) => item.label),
@@ -1217,8 +1006,6 @@ const Dashboard = () => {
                           {
                             data: companyPayData.map((item) => item.value),
                             backgroundColor: companyPayData.map((item) => item.color),
-                            borderWidth: 4, // ความหนาของช่องว่างระหว่างเส้น
-                            borderColor: "#ffffff", // สีช่องว่าง (สีเดียวกับพื้นหลัง)
                             borderRadius: 20, // ทำให้ปลายเส้นโค้งมน (Pill shape)
                             hoverOffset: 4,
                           },
@@ -1227,7 +1014,7 @@ const Dashboard = () => {
                       options={{
                         responsive: true,
                         maintainAspectRatio: false,
-                        cutout: "80%", // ขนาดรูกลางโดนัท (ยิ่งเยอะเส้นยิ่งบาง)
+                        cutout: "90%", // 
                         plugins: {
                           legend: {
                             display: false, // ปิด Legend เดิมของ Chart.js
