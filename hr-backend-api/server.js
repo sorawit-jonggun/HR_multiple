@@ -31,6 +31,17 @@ const holidaysRoutes = require('./routes/holidaysRoutes');
 app.use(cors());
 app.use(express.json());
 
+// ==========================================
+// ปิดการใช้งาน API ชั่วคราว (ถ้าต้องการ)
+// ตั้งตัวแปรแวดล้อม DISABLE_API=true เพื่อบล็อกทุก route ที่ขึ้นต้นด้วย /api
+// จะคืนค่า 410 Gone ให้กับผู้เรียกแทนการเรียก controllers ใดๆ
+// ==========================================
+if (process.env.DISABLE_API === 'true') {
+  app.use('/api', (req, res) => {
+    res.status(410).json({ error: 'API temporarily disabled' });
+  });
+}
+
 // เช็คสถานะ Server เบื้องต้น
 app.get('/', (req, res) => {
   res.send('HR Group System API is running...');

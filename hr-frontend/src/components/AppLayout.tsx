@@ -68,6 +68,7 @@ const navItems: NavItem[] = [
       Permission.VIEW_HOLDING_DASHBOARD,
     ],
   },
+  // เลือกบริษัท (ถ้ามีสิทธิ์) จะเห็นเมนูนี้
   {
     icon: Building,
     label: "Organization",
@@ -87,6 +88,7 @@ const navItems: NavItem[] = [
       { label: "Levels", path: "/organization/level" },
     ],
   },
+
   // {
   //   icon: Briefcase,
   //   label: "Position Master",

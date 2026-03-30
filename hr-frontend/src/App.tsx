@@ -20,15 +20,12 @@ import Login from "@/routes/Login";
 
 const queryClient = new QueryClient();
 
-// ==========================================
-// 🛡️ ยามเฝ้าประตู (Protected Route)
-// ==========================================
 const ProtectedRoute = ({ requireAdmin = false }) => {
   const token = localStorage.getItem("token");
   const userDataStr = localStorage.getItem("userData");
   const user = userDataStr ? JSON.parse(userDataStr) : null;
 
-  // 1. ถ้าไม่มี Token (ยังไม่ Login) เตะไปหน้า Login
+
   if (!token) {
     return <Navigate to="/Login" replace />;
   }

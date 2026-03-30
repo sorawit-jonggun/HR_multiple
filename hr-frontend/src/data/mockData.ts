@@ -542,3 +542,91 @@ export const allCompanies = [
     short_name: "TSA",
   },
 ];
+
+// -----------------------------
+// Helper functions for mocked API
+// -----------------------------
+const companyIdToName = (id: string) => {
+  const c = companies.find((x) => x.id === id);
+  return c ? c.name : "";
+};
+
+export function getEmployeesByCompany(company_id?: string) {
+  if (!company_id || company_id === "all") return employees;
+  return employees.filter((e) => e.companyId === company_id);
+}
+
+export function getContractsByCompany(company_id?: string) {
+  const emps = getEmployeesByCompany(company_id);
+  return emps
+    .filter((e) => e.contractEnd)
+    .map((e) => ({
+      employeeId: e.id,
+      name: `${e.firstName} ${e.lastName}`,
+      company: companyIdToName(e.companyId),
+      expireDate: e.contractEnd,
+      daysLeft: Math.max(0, Math.ceil((new Date(e.contractEnd).getTime() - Date.now()) / (1000 * 60 * 60 * 24))),
+    }));
+}
+
+export function getPendingApprovalsByCompany(company_id?: string) {
+  const emps = getEmployeesByCompany(company_id);
+  // simple mock: one pending approval per employee with pending status
+  return emps.slice(0, 5).map((e, i) => ({
+    id: 1000 + i,
+    employeeId: e.id,
+    employeeName: `${e.firstName} ${e.lastName}`,
+    type: i % 2 === 0 ? "Leave Request" : "OT Request",
+    reason: i % 2 === 0 ? "ลากิจ (Mock)" : "OT ปิดยอด (Mock)",
+    status: "Pending",
+  }));
+}
+
+export function getHolidaysByCompany(/* company_id?: string */) {
+  // Holidays are usually global; return sample static list
+  return [
+    { id: 1, name: "วันจักรี", date: "2026-04-06" },
+    { id: 2, name: "สงกรานต์", date: "2026-04-13" },
+    { id: 3, name: "สงกรานต์", date: "2026-04-14" },
+  ];
+}
+
+export function getLeaveBalancesByCompany(company_id?: string) {
+  const emps = getEmployeesByCompany(company_id);
+  return emps.map((e, idx) => ({
+    employeeId: e.id,
+    balance: 10 + (idx % 5),
+    name: `${e.firstName} ${e.lastName}`,
+  }));
+}
+
+export function getAttendanceLogsByCompany(company_id?: string) {
+  const emps = getEmployeesByCompany(company_id);
+  const today = new Date();
+  const logs: any[] = [];
+  emps.forEach((e, idx) => {
+    for (let d = 0; d < 7; d++) {
+      const dt = new Date(today.getFullYear(), today.getMonth(), today.getDate() - d);
+      logs.push({
+        employeeId: e.id,
+        work_date: dt.toISOString().split("T")[0],
+        status: d % 6 === 0 ? "absent" : d % 5 === 0 ? "late" : d % 4 === 0 ? "present" : d % 3 === 0 ? "ot" : "present",
+      });
+    }
+  });
+  // sort desc by date
+  return logs.sort((a, b) => (a.work_date < b.work_date ? 1 : -1));
+}
+
+export function getLeaveRequestsByCompany(company_id?: string) {
+  const emps = getEmployeesByCompany(company_id);
+  return emps.slice(0, 6).map((e, i) => ({
+    id: 500 + i,
+    employeeId: e.id,
+    start_date: new Date(Date.now() - i * 86400000 * 2).toISOString().split("T")[0],
+    end_date: new Date(Date.now() + i * 86400000).toISOString().split("T")[0],
+    status: i % 3 === 0 ? "approved" : "pending",
+    reason: "Mock leave",
+  }));
+}
+
