@@ -18,7 +18,7 @@ const LeaveChart = ({ data = [] }) => {
         borderWidth: 0,
         borderRadius: 10,
         hoverOffset: 6,
-        spacing: 4, // ลด spacing ลงหน่อยเพื่อให้วงไม่แตกมากเมื่อรายการเยอะ
+        spacing: 4, 
       },
     ],
   };
@@ -44,14 +44,14 @@ const LeaveChart = ({ data = [] }) => {
   const total = data.reduce((acc, curr) => acc + curr.value, 0);
 
   return (
-    <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 h-full flex flex-col">
+    <div className="bg-white p-5 rounded-xl shadow-sm border-2 border-slate-300 h-full flex flex-col">
       <h3 className="font-semibold mb-4 text-gray-700 text-base italic">
-        Leave Distribution
+        Leave Distribution / Day
       </h3>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 flex-1 gap-4 overflow-hidden">
-        {/* คอลัมน์ซ้าย: Custom Legend (ปรับให้เลื่อนได้ถ้ารายการยาว) */}
-        <div className="flex flex-col justify-center gap-2 overflow-y-auto max-h-[200px] pr-2 custom-scrollbar">
+      <div className="grid grid-cols-2 md:grid-cols-2 flex-1 gap-4 overflow-hidden">
+        {/*Legend  */}
+        <div className="flex flex-col justify-center gap-2 overflow-y-auto max-h-[200px] px-6 custom-scrollbar">
           {data.map((item, index) => (
             <div key={index} className="flex items-center gap-3">
               <div
@@ -67,8 +67,8 @@ const LeaveChart = ({ data = [] }) => {
           ))}
         </div>
 
-        {/* คอลัมน์ขวา: กราฟ */}
-        <div className="relative h-40 w-40 sm:h-48 sm:w-48 mx-auto self-center">
+        {/* bar*/}
+        <div className="relative h-50 w-50 sm:h-48 sm:w-48  mx-auto self-center">
           <Doughnut data={chartData} options={options} />
           {/* ส่วนแสดงตัวเลขรวมตรงกลางกราฟ */}
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">

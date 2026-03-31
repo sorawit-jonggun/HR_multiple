@@ -53,8 +53,8 @@ const mockAPI = {
 // 2. COMPONENT หลัก
 // ==========================================
 export default function DepartmentManagement() {
-  const { selectedCompany } = useCompany(); // <-- เรียกใช้ useCompany
-  const currentCompanyId = selectedCompany?.id || "all"; // <-- ดึง id ออกมาใช้
+  const { selectedCompany } = useCompany(); // 
+  const currentCompanyId = selectedCompany?.id || "all"; 
   
   const [departments, setDepartments] = useState<any[]>([]);
   const [companies, setCompanies] = useState<any[]>([]);
@@ -183,17 +183,8 @@ export default function DepartmentManagement() {
   </button>
 </div>
 
-        {/* Info Card */}
-        <div className="grid grid-cols-4">
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200 p-6 shadow-sm w-full md:w-1/3 ">
-          <h3 className="font-bold text-blue-900 mb-2 flex items-center gap-2">
-            <Briefcase size={20} />
-            Total Departments
-          </h3>
-          <p className="text-4xl font-bold text-blue-900">{departments.length}</p>
-        </div>
-        </div>
-
+        
+      
         {/* Content Grid */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
           {departments.length === 0 ? (

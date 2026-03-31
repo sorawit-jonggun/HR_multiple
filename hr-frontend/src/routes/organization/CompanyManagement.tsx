@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import AppLayout from "@/components/AppLayout";
-import { allCompanies } from "@/data/mockData";
+import { companies } from "@/data/mockData";
 import {
   Plus,
   Edit2,

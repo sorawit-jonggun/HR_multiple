@@ -20,9 +20,9 @@ import {
   getContractsByCompany,
   getPendingApprovalsByCompany,
   getHolidaysByCompany,
-  getLeaveBalancesByCompany,
   getAttendanceLogsByCompany,
-  getLeaveRequestsByCompany,
+
+  getTotalEmployeeCount
 } from "@/data/mockData";
 
 // นำเข้าฟังก์ชันดึงข้อมูลกราฟฝั่ง ChartDashboard

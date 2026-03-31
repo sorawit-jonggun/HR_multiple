@@ -5,7 +5,7 @@ import { CHART_COLORS } from '../../../data/dashboard/ChartDashboard';
 // เปลี่ยนจากค่าคงที่มาเป็นรับ 'data' ผ่าน props
 const OTChart = ({ data = [] }) => {
   return (
-    <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 h-full flex flex-col">
+    <div className="bg-white p-4 rounded-xl shadow-sm border-2 border-slate-300 h-full flex flex-col">
       <h3 className="font-semibold mb-4 text-gray-700 text-base italic">
         OT by Dept (Hours)
       </h3>
